@@ -1,0 +1,74 @@
+'''Notes for the first day'''
+
+Why are different parts of video games written in different languages?
+
+Low Level – control execution closely (such as memory), fast programs, harder to write
+
+High Level – convenience, more human–readable, glue to database, slower programs, easier to write
+
+low level stuff is being called millions of times more often than high level stuff
+(i.e. graphics and audio and physics are called much more than game rules)
+
+Course Outline:
+
+1) Intro
+2) Triangle Rasterization (4 weeks)
+    2a) Draw one 2D Triangle
+    2b) Draw a 2D mesh made of many 2D triangles
+    2c) Draw a 3D mesh made of many 2D triangles
+    2d) Improve the 3Dness
+3) Triangle Rasterization in Hardware (2.5 weeks)
+    Using Vulkan
+4) Ray Tracing (2.5 weeks)
+5) Conclusion
+
+'''Notes for 9/14'''
+
+We can talk about color in other, non RGB ways, like HSV (hue, saturation, value), CMYK
+
+Raster vs Vector graphics
+
+                    Raster Image                    Vector Image
+What is it?         A rectangular grid of pixels    A program describing how to Draw
+                                                    the image step by step
+
+Example Line        Picture of a Line               2 1 move to, 11 6 line to, stroke
+
+File Format         JPEG, GIF, PNG                  POSTSCRIPT, EPS, PDF, SVG
+
+Editors             Photoshop, gimp                 Illustrator
+
+Rasterization – computing a raster approximation to a vector image
+
+Often aliasing (means jaggedness) happens
+
+Almost all 3D graphics algorithms work like this: the world is stored in a vector format,
+on each animation frame, 1) update the state of the world 2) Rasterize it
+
+The world is best modeled in a vector format because objects have relationships with
+each other, think of the world as an actual world and rasterizing it is just taking a Picture
+
+The integers represent the actual pixels, so one triangle could theoretically be contained entirely within a picture
+
+
+
+
+THE ALGORITHM
+
+Go from left to right inside the triangle, bottom to top
+Outer loop of x0, inner loop of x1
+(x1 is the y axis)
+Start with the ceiling of a0 (a0 may not be an integer)
+End with floor of b0
+x1 = a1 + ((b1 - a1)/(b0 - a0)) * (x0 - a0)
+Inner loop for x1:
+Start with ceiling of the above x1
+End with floor of (x1 = a1 + ((c1 - a1)/(c0 - a0)) * (x0 - a0))
+Switch loops at floor(c0) and then start at floor(c0) + 1
+Then do the same inner loop but use the floor of x1 = c1 + ((b1 - c1)/(b0 - c0)) * (x0 - c0)
+
+If b0 = a0, then the left side doesn't need to be rendered, same with c0 = a0
+If c0 = b0, then the right side doesn't need to be rendered
+
+If a is not left–most, call helper function to rearrange vertices
+Only two cases you should handle is determining whether c0 or b0 is closer to a0.
